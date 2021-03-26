@@ -96,4 +96,8 @@ class AddFragment : Fragment() {
         return false
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }
