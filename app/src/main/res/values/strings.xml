@@ -12,6 +12,12 @@
     <string name="add">Add</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
+    <string name="toast_error_add">Please fill out all fields</string>
+    <string name="toast_successfully_add">Successfully added</string>
+    <string name="toast_successfully_update">Successfully updated</string>
+    <string name="toast_successfully_delete_model">Successfully deleted %s</string>
+    <string name="dialog_delete_title">Delete %s?</string>
+    <string name="dialog_delete_message">Are you sure you want to remove %s?</string>
 
     <string-array name="priorities">
         <item>High Priority</item>
