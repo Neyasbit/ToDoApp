@@ -15,11 +15,14 @@ import com.example.todoapp.data.models.Converter
 import com.example.todoapp.data.models.ToDoModel
 import com.example.todoapp.data.viewmodels.ToDoViewModel
 import com.example.todoapp.data.viewmodels.ToDoViewModelFactory
+import com.example.todoapp.databinding.FragmentAddBinding
 import com.example.todoapp.fragments.SharedViewModel
 import com.example.todoapp.fragments.SharedViewModelFactory
 
 
 class AddFragment : Fragment() {
+    private var _binding: FragmentAddBinding? = null
+    private val binding get() = _binding!!
 
     private val toDoViewModel: ToDoViewModel by viewModels {
         ToDoViewModelFactory((requireActivity().application as ToDoApplication).repository)
@@ -28,9 +31,6 @@ class AddFragment : Fragment() {
     private val sharedViewModel: SharedViewModel by viewModels {
         SharedViewModelFactory(requireActivity().application)
     }
-    private lateinit var title: EditText
-    private lateinit var description: EditText
-    private lateinit var priority: Spinner
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,25 +38,24 @@ class AddFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_add, container, false)
+        _binding = FragmentAddBinding.inflate(inflater, container, false)
 
-
-        view.apply {
-            title = findViewById(R.id.title_et)
-            description = findViewById(R.id.description_et)
-            priority = findViewById(R.id.priorities_spinner)
-        }
-
-        title.setOnKeyListener{_, ketCode, _ ->
-            handelKeyEvent(ketCode)
-        }
-        description.setOnKeyListener{ _, ketCode, _ ->
-            handelKeyEvent(ketCode)
-        }
-        priority.onItemSelectedListener = sharedViewModel.spinnerListener
-        return view
+        return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
+            titleEt.setOnKeyListener{ _, keyCode, _ ->
+                handelKeyEvent(keyCode)
+            }
+            descriptionEt.setOnKeyListener { _, keyCode, _->
+                handelKeyEvent(keyCode)
+            }
+            prioritiesSpinner.onItemSelectedListener = sharedViewModel.spinnerListener
+        }
+    }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.add_fragment_menu, menu)
     }
@@ -70,13 +69,13 @@ class AddFragment : Fragment() {
     }
 
     private fun insertDataToDb() {
-        val title = title.text.toString()
-        val description = description.text.toString()
+        val title = binding.titleEt.text.toString()
+        val description = binding.descriptionEt.text.toString()
         val validate = sharedViewModel.verifyDataFromUser(title, description)
         if (validate) {
             val toDoModel = ToDoModel(
                 title,
-                Converter().toPriority(priority.selectedItem.toString().substringBefore(" ")),
+                Converter().toPriority(binding.prioritiesSpinner.selectedItem.toString().substringBefore(" ")),
                 description
             )
             toDoViewModel.insertData(toDoModel)

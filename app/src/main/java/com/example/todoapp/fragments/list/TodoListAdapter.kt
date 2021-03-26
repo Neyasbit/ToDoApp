@@ -1,12 +1,10 @@
 package com.example.todoapp.fragments.list
 
 import android.content.res.ColorStateList
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
@@ -16,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.R
 import com.example.todoapp.data.models.Priority
 import com.example.todoapp.data.models.ToDoModel
+import com.example.todoapp.databinding.RowLayoutBinding
 
 
 class TodoListAdapter :
@@ -28,23 +27,23 @@ class TodoListAdapter :
         holder.bind(getItem(position))
     }
 
-    class ToDoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val titleItem: TextView = itemView.findViewById(R.id.title_txt)
-        private val descriptionItem: TextView = itemView.findViewById(R.id.description_txt)
-        private val priorityCircle: View = itemView.findViewById(R.id.priority_indicator)
-        private val rowLayout: ConstraintLayout = itemView.findViewById(R.id.row_background)
-
+    class ToDoViewHolder( val binding: RowLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(toDoModel: ToDoModel) {
-            titleItem.text = toDoModel.title
-            descriptionItem.text = toDoModel.description
-
+            binding.apply {
+                titleTxt.text = toDoModel.title
+                descriptionTxt.text = toDoModel.description
+                rowBackground.setOnClickListener {
+                    val action = ListFragmentDirections.actionListFragmentToUpdateFragment(toDoModel)
+                    it.findNavController().navigate(action)
+                }
+            }
             when (toDoModel.priority) {
-                Priority.High -> priorityCircle.backgroundTintList =
+                Priority.High -> binding.priorityIndicator.backgroundTintList =
                     ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.red))
-                Priority.Medium -> priorityCircle.backgroundTintList =
+                Priority.Medium -> binding.priorityIndicator.backgroundTintList =
                     ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.yellow))
-                else -> priorityCircle.backgroundTintList =
+                else -> binding.priorityIndicator.backgroundTintList =
                     ColorStateList.valueOf(
                         ContextCompat.getColor(
                             itemView.context,
@@ -52,17 +51,12 @@ class TodoListAdapter :
                         )
                     )
             }
-
-            rowLayout.setOnClickListener {
-                val action = ListFragmentDirections.actionListFragmentToUpdateFragment(toDoModel)
-                itemView.findNavController().navigate(action)
-            }
         }
 
         companion object {
             fun create(parent: ViewGroup): ToDoViewHolder {
-                val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.row_layout, parent, false)
+                val view = RowLayoutBinding
+                    .inflate(LayoutInflater.from(parent.context), parent, false)
                 return ToDoViewHolder(view)
             }
         }

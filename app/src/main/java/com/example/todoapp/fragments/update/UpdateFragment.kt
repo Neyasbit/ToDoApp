@@ -18,10 +18,14 @@ import com.example.todoapp.data.models.Converter
 import com.example.todoapp.data.models.ToDoModel
 import com.example.todoapp.data.viewmodels.ToDoViewModel
 import com.example.todoapp.data.viewmodels.ToDoViewModelFactory
+import com.example.todoapp.databinding.FragmentUpdateBinding
 import com.example.todoapp.fragments.SharedViewModel
 import com.example.todoapp.fragments.SharedViewModelFactory
 
 class UpdateFragment : Fragment() {
+
+    private var _binding: FragmentUpdateBinding? = null
+    private val binding get() = _binding!!
 
     private val args by navArgs<UpdateFragmentArgs>()
     private val sharedViewModel: SharedViewModel by viewModels {
@@ -30,9 +34,6 @@ class UpdateFragment : Fragment() {
     private val toDoViewModel: ToDoViewModel by viewModels {
         ToDoViewModelFactory((requireActivity().application as ToDoApplication).repository)
     }
-    private lateinit var currentTitle: TextView
-    private lateinit var currentDescription: TextView
-    private lateinit var currentPriority: Spinner
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,20 +41,20 @@ class UpdateFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_update, container, false)
+        _binding = FragmentUpdateBinding.inflate(layoutInflater, container, false)
 
-        view.apply {
-            currentTitle = findViewById(R.id.current_title_et)
-            currentDescription = findViewById(R.id.current_description_et)
-            currentPriority = findViewById(R.id.current_priorities_spinner)
+        return binding.root
+    }
 
-            currentTitle.text = args.currentItem.title
-            currentDescription.text = args.currentItem.description
-            currentPriority.setSelection(args.currentItem.priority.ordinal)
-            currentPriority.onItemSelectedListener = sharedViewModel.spinnerListener
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
+            currentTitleEt.setText(args.currentItem.title)
+            currentDescriptionEt.setText(args.currentItem.description)
+            currentPrioritiesSpinner.setSelection(args.currentItem.priority.ordinal)
+            currentPrioritiesSpinner.onItemSelectedListener = sharedViewModel.spinnerListener
         }
-
-        return view
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -89,14 +90,14 @@ class UpdateFragment : Fragment() {
     }
 
     private fun updateModel() {
-        val title = currentTitle.text.toString()
-        val description = currentDescription.text.toString()
+        val title = binding.currentTitleEt.text.toString()
+        val description = binding.currentDescriptionEt.text.toString()
         val validate = sharedViewModel.verifyDataFromUser(title, description)
         if (validate) {
             val toDoModel = ToDoModel(
                 title,
                 Converter().toPriority(
-                    currentPriority.selectedItem.toString().substringBefore(" ")
+                    binding.currentPrioritiesSpinner.selectedItem.toString().substringBefore(" ")
                 ),
                 description,
                 args.currentItem.id
@@ -112,5 +113,10 @@ class UpdateFragment : Fragment() {
     }
     private fun showToastMessage(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
