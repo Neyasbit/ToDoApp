@@ -1,6 +1,7 @@
 package com.example.todoapp.fragments.list
 
 import android.content.res.ColorStateList
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,29 +28,20 @@ class TodoListAdapter :
         holder.bind(getItem(position))
     }
 
-    class ToDoViewHolder( val binding: RowLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ToDoViewHolder(val binding: RowLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(toDoModel: ToDoModel) {
+            val colorName = toDoModel.priority.priorityName
             binding.apply {
                 titleTxt.text = toDoModel.title
                 descriptionTxt.text = toDoModel.description
                 rowBackground.setOnClickListener {
-                    val action = ListFragmentDirections.actionListFragmentToUpdateFragment(toDoModel)
+                    val action =
+                        ListFragmentDirections.actionListFragmentToUpdateFragment(toDoModel)
                     it.findNavController().navigate(action)
                 }
-            }
-            when (toDoModel.priority) {
-                Priority.High -> binding.priorityIndicator.backgroundTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.red))
-                Priority.Medium -> binding.priorityIndicator.backgroundTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.yellow))
-                else -> binding.priorityIndicator.backgroundTintList =
-                    ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            itemView.context,
-                            R.color.green
-                        )
-                    )
+                binding.priorityIndicator.backgroundTintList =
+                    ColorStateList.valueOf(Priority.findColorByName(colorName))
             }
         }
 
