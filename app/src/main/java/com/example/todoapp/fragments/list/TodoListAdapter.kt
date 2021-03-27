@@ -1,18 +1,12 @@
 package com.example.todoapp.fragments.list
 
 import android.content.res.ColorStateList
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.todoapp.R
 import com.example.todoapp.data.models.Priority
 import com.example.todoapp.data.models.ToDoModel
 import com.example.todoapp.databinding.RowLayoutBinding
@@ -31,7 +25,7 @@ class TodoListAdapter :
     class ToDoViewHolder(val binding: RowLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(toDoModel: ToDoModel) {
-            val colorName = toDoModel.priority.priorityName
+            val colorPosition = toDoModel.priority.ordinal
             binding.apply {
                 titleTxt.text = toDoModel.title
                 descriptionTxt.text = toDoModel.description
@@ -41,7 +35,7 @@ class TodoListAdapter :
                     it.findNavController().navigate(action)
                 }
                 binding.priorityIndicator.backgroundTintList =
-                    ColorStateList.valueOf(Priority.findColorByName(colorName))
+                    ColorStateList.valueOf(Priority.findColorByPosition(colorPosition))
             }
         }
 
