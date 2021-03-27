@@ -23,7 +23,8 @@ class TodoListAdapter :
         holder.bind(getItem(position))
     }
 
-    class ToDoViewHolder(private val binding: RowLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ToDoViewHolder(private val binding: RowLayoutBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(toDoModel: ToDoModel) {
             val colorPosition = toDoModel.priority.ordinal
@@ -56,6 +57,9 @@ class TodoListAdapter :
 
         override fun areContentsTheSame(oldItem: ToDoModel, newItem: ToDoModel): Boolean {
             return oldItem.title == newItem.title
+                    && oldItem.description == newItem.description
+                    && oldItem.priority == newItem.priority
+                    && oldItem.id == newItem.id
         }
     }
 }

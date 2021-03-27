@@ -15,6 +15,7 @@ import com.example.todoapp.data.viewmodels.ToDoViewModel
 import com.example.todoapp.data.viewmodels.ToDoViewModelFactory
 import com.example.todoapp.databinding.FragmentListBinding
 import com.google.android.material.snackbar.Snackbar
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
 class ListFragment : Fragment() {
 
@@ -45,6 +46,9 @@ class ListFragment : Fragment() {
             recyclerView.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = todoListAdapter
+                itemAnimator = SlideInUpAnimator().apply {
+                    addDuration = 300
+                }
             }
             swipeToDeleteModel(recyclerView)
             floatingActionButton.setOnClickListener {
