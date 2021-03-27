@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.data.models.Priority
@@ -22,7 +23,7 @@ class TodoListAdapter :
         holder.bind(getItem(position))
     }
 
-    class ToDoViewHolder(val binding: RowLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ToDoViewHolder(private val binding: RowLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(toDoModel: ToDoModel) {
             val colorPosition = toDoModel.priority.ordinal
@@ -56,6 +57,16 @@ class TodoListAdapter :
         override fun areContentsTheSame(oldItem: ToDoModel, newItem: ToDoModel): Boolean {
             return oldItem.title == newItem.title
         }
+    }
+}
+
+abstract class SwipeToDeleteItem : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+    override fun onMove(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ): Boolean {
+        return false
     }
 }
 

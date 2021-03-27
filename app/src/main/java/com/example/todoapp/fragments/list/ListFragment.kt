@@ -5,12 +5,16 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.R
 import com.example.todoapp.ToDoApplication
+import com.example.todoapp.data.models.ToDoModel
 import com.example.todoapp.data.viewmodels.ToDoViewModel
 import com.example.todoapp.data.viewmodels.ToDoViewModelFactory
 import com.example.todoapp.databinding.FragmentListBinding
+import com.google.android.material.snackbar.Snackbar
 
 class ListFragment : Fragment() {
 
@@ -41,7 +45,8 @@ class ListFragment : Fragment() {
             recyclerView.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = todoListAdapter
-                }
+            }
+            swipeToDeleteModel(recyclerView)
             floatingActionButton.setOnClickListener {
                 findNavController().navigate(R.id.action_listFragment_to_addFragment)
             }
@@ -51,6 +56,7 @@ class ListFragment : Fragment() {
             models.let { todoListAdapter.submitList(it) }
         }
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
     }
@@ -64,6 +70,34 @@ class ListFragment : Fragment() {
 
     private fun deleteAllModels() {
         toDoViewModel.deleteAllModel()
+    }
+
+    private fun swipeToDeleteModel(recyclerView: RecyclerView) {
+        val swipeToDeleteCallback = object : SwipeToDeleteItem() {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // deleted item
+                val deletedModel = todoListAdapter.currentList[viewHolder.adapterPosition]
+                toDoViewModel.deleteModel(deletedModel)
+                todoListAdapter.notifyItemRemoved(viewHolder.adapterPosition)
+                // restore item
+                restoreDeletedItem(viewHolder.itemView, deletedModel, viewHolder.adapterPosition)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    private fun restoreDeletedItem(view: View, deletedItem: ToDoModel, position: Int) {
+        Snackbar.make(
+            view,
+            "Deleted ${deletedItem.title}",
+            Snackbar.LENGTH_LONG
+        ).apply {
+            setAction("Undo") {
+                toDoViewModel.insertData(deletedItem)
+                todoListAdapter.notifyItemChanged(position)
+            }
+        }.show()
     }
 
     override fun onDestroy() {
