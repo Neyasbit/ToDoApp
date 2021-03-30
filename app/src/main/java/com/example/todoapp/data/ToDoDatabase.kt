@@ -25,6 +25,12 @@ interface ToDoDao {
 
     @Query("SELECT * FROM ToDoModel WHERE title LIKE :searchQuery")
     fun searchDatabase(searchQuery: String): LiveData<List<ToDoModel>>
+
+    @get:Query("SELECT * FROM ToDoModel order by case when priority LIKE 'H%' THEN 1 when priority like 'M%' then 2 when priority like 'L%' then 3 END")
+    val sortByHighPriority: LiveData<List<ToDoModel>>
+
+    @get:Query("SELECT * FROM ToDoModel order by case when priority like 'L%' then 1 when priority like 'M%' then 2 when priority like 'H%' then 3 END")
+    val sortByLowPriority: LiveData<List<ToDoModel>>
 }
 
 @Database(entities = [ToDoModel::class], version = 1, exportSchema = false)

@@ -77,6 +77,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_delete_all -> deleteAllModels()
+            R.id.menu_priority_high -> sortByHighPriority()
+            R.id.menu_priority_low -> sortByLowPriority()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -136,6 +138,17 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         }.show()
     }
 
+    private fun sortByLowPriority() {
+        toDoViewModel.sortByLowPriority.observe(viewLifecycleOwner) {
+            todoListAdapter.submitList(it)
+        }
+    }
+
+    private fun sortByHighPriority() {
+        toDoViewModel.sortByHighPriority.observe(viewLifecycleOwner) {
+            todoListAdapter.submitList(it)
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         binding = null

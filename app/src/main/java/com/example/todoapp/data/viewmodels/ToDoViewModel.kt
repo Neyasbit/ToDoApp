@@ -11,7 +11,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ToDoViewModel(private val repository: ToDoRepository) : ViewModel() {
+
     val allData: LiveData<List<ToDoModel>> = repository.getAllData
+    val sortByHighPriority: LiveData<List<ToDoModel>> = repository.sortByHighPriority
+    val sortByLowPriority: LiveData<List<ToDoModel>> = repository.sortByLowPriority
 
     fun insertData(toDoModel: ToDoModel) {
         viewModelScope.launch(Dispatchers.IO) {
