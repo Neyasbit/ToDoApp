@@ -1,7 +1,9 @@
 package com.example.todoapp.fragments.list
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -17,7 +19,7 @@ import com.example.todoapp.databinding.FragmentListBinding
 import com.google.android.material.snackbar.Snackbar
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private val toDoViewModel: ToDoViewModel by viewModels {
         ToDoViewModelFactory((requireActivity().application as ToDoApplication).repository)
@@ -56,13 +58,20 @@ class ListFragment : Fragment() {
             }
         }
 
-        toDoViewModel.allData.observe(requireActivity()) { models ->
+        toDoViewModel.allData.observe(viewLifecycleOwner) { models ->
             models.let { todoListAdapter.submitList(it) }
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
+
+        val search = menu.findItem(R.id.menu_search)
+        val searchView = search.actionView as? SearchView
+        searchView?.apply {
+            isSubmitButtonEnabled = true
+            setOnQueryTextListener(this@ListFragment)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -70,6 +79,29 @@ class ListFragment : Fragment() {
             R.id.menu_delete_all -> deleteAllModels()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        query?.let {
+            searchThroughDatabase(it)
+        }
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        newText?.let {
+            searchThroughDatabase(it)
+        }
+        return true
+    }
+
+    private fun searchThroughDatabase(query: String) {
+        val searchQuery = "%$query%"
+        toDoViewModel.searchDatabase(searchQuery).observe(viewLifecycleOwner) { list ->
+            list?.let {
+                todoListAdapter.submitList(it)
+            }
+        }
     }
 
     private fun deleteAllModels() {

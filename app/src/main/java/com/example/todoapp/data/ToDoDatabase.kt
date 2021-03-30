@@ -22,6 +22,9 @@ interface ToDoDao {
 
     @Query("DELETE FROM ToDoModel")
     suspend fun deleteAllModels()
+
+    @Query("SELECT * FROM ToDoModel WHERE title LIKE :searchQuery")
+    fun searchDatabase(searchQuery: String): LiveData<List<ToDoModel>>
 }
 
 @Database(entities = [ToDoModel::class], version = 1, exportSchema = false)

@@ -33,6 +33,9 @@ class ToDoViewModel(private val repository: ToDoRepository) : ViewModel() {
             repository.deleteAllModels()
         }
     }
+    fun searchDatabase(searchQuery: String): LiveData<List<ToDoModel>>{
+        return repository.searchDatabase(searchQuery)
+    }
 }
 
 class ToDoViewModelFactory(private val repository: ToDoRepository) : ViewModelProvider.Factory {
