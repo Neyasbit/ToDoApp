@@ -2,10 +2,7 @@ package com.example.todoapp.fragments.update
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.Message
 import android.view.*
-import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.todoapp.R
 import com.example.todoapp.ToDoApplication
-import com.example.todoapp.Utils
 import com.example.todoapp.data.models.Converter
 import com.example.todoapp.data.models.ToDoModel
 import com.example.todoapp.data.viewmodels.ToDoViewModel
@@ -65,7 +61,6 @@ class UpdateFragment : Fragment() {
         when (item.itemId) {
             R.id.menu_save -> {
                 updateModel()
-                Utils().hideKeyBoard(requireActivity())
             }
             R.id.menu_delete -> {
                 confirmDeleteModel()
@@ -82,11 +77,10 @@ class UpdateFragment : Fragment() {
                 goToBackScreen()
                 showToastMessage(getString(R.string.toast_successfully_delete_model, currentTitle))
             }
-            setNegativeButton("No") {_,_ ->}
+            setNegativeButton("No") { _, _ -> }
             setTitle(getString(R.string.dialog_delete_title, currentTitle))
             setMessage(getString(R.string.dialog_delete_message, currentTitle))
         }.create().show()
-
     }
 
     private fun updateModel() {
@@ -111,6 +105,7 @@ class UpdateFragment : Fragment() {
     private fun goToBackScreen() {
         findNavController().navigate(R.id.action_updateFragment_to_listFragment)
     }
+
     private fun showToastMessage(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }

@@ -2,15 +2,12 @@ package com.example.todoapp.fragments.add
 
 import android.os.Bundle
 import android.view.*
-import android.widget.EditText
-import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.todoapp.R
 import com.example.todoapp.ToDoApplication
-import com.example.todoapp.Utils
 import com.example.todoapp.data.models.Converter
 import com.example.todoapp.data.models.ToDoModel
 import com.example.todoapp.data.viewmodels.ToDoViewModel
@@ -18,6 +15,7 @@ import com.example.todoapp.data.viewmodels.ToDoViewModelFactory
 import com.example.todoapp.databinding.FragmentAddBinding
 import com.example.todoapp.fragments.SharedViewModel
 import com.example.todoapp.fragments.SharedViewModelFactory
+import com.example.todoapp.utils.hideKeyBoard
 
 
 class AddFragment : Fragment() {
@@ -63,7 +61,6 @@ class AddFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_add) {
             insertDataToDb()
-            Utils().hideKeyBoard(requireActivity())
         }
         return super.onOptionsItemSelected(item)
     }
@@ -90,7 +87,7 @@ class AddFragment : Fragment() {
 
     private fun handelKeyEvent(keyCode: Int): Boolean {
         if (keyCode == KeyEvent.KEYCODE_ENTER) {
-            Utils().hideKeyBoard(requireActivity())
+            hideKeyBoard(requireActivity())
             return true
         }
         return false

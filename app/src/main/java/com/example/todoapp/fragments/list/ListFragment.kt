@@ -16,6 +16,7 @@ import com.example.todoapp.data.models.ToDoModel
 import com.example.todoapp.data.viewmodels.ToDoViewModel
 import com.example.todoapp.data.viewmodels.ToDoViewModelFactory
 import com.example.todoapp.databinding.FragmentListBinding
+import com.example.todoapp.utils.hideKeyBoard
 import com.google.android.material.snackbar.Snackbar
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
@@ -36,6 +37,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         binding = fragmentBinding
 
         setHasOptionsMenu(true)
+
+        hideKeyBoard(requireActivity())
 
         return fragmentBinding.root
     }
@@ -118,14 +121,14 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                 toDoViewModel.deleteModel(deletedModel)
                 todoListAdapter.notifyItemRemoved(viewHolder.adapterPosition)
                 // restore item
-                restoreDeletedItem(viewHolder.itemView, deletedModel, viewHolder.adapterPosition)
+                restoreDeletedItem(viewHolder.itemView, deletedModel)
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    private fun restoreDeletedItem(view: View, deletedItem: ToDoModel, position: Int) {
+    private fun restoreDeletedItem(view: View, deletedItem: ToDoModel) {
         Snackbar.make(
             view,
             "Deleted ${deletedItem.title}",
@@ -133,7 +136,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         ).apply {
             setAction("Undo") {
                 toDoViewModel.insertData(deletedItem)
-                todoListAdapter.notifyItemChanged(position)
             }
         }.show()
     }
